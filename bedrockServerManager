@@ -1,0 +1,86 @@
+#!/usr/bin/env python
+
+"""
+File: bedrockServerManager.py
+Author: Ethan Hunter
+Notes: The main executable for bedrockServerManager
+"""
+
+from ArgParser import ArgParser
+from ServerProperties import ServerProperties
+import os
+from shutil import move
+import subprocess
+
+VERSION = "0.0.1"
+
+def _moveOldFiles():
+    s = ServerProperties("server.properties")
+    if ( os.path.isfile("./server.properties") ):
+        validationErrors = s.validate()
+        if ( len(validationErrors) == 0 ):
+            move('./server.properties', './worlds/' + s.serverName)
+            if ( os.path.isfile("./permissions.json") ):
+                move('./permissions.json', './worlds/' + s.serverName)
+            else:
+                print("Permissions not found")
+        else:
+            print(validationErrors)
+    else:
+        print("Properties not found")
+
+def _moveNewFiles(serverName: str):
+    serverPropertiesFilename = "./worlds/" + serverName + "/server.properties"
+    permissionsJsonFilename  = "./worlds/" + serverName + "/permissions.json"
+    s = ServerProperties(serverPropertiesFilename)
+    validationErrors = s.validate()
+    if ( len(validationErrors) == 0):
+        move(serverPropertiesFilename, "./server.properties")
+        move(permissionsJsonFilename,  "./permissions.json")
+    else:
+        print(validationErrors)
+
+def _checkForOverlap():
+    existingFiles = False
+    if ( os.path.isfile("./server.properties") ):
+        existingFiles = True
+    if ( os.path.isfile("./permissions.json") ):
+        existingFiles = True
+    return existingFiles
+
+def startServer(serverName: str, testing: bool):
+    if ( os.path.isdir("./worlds/" + serverName) ):
+        print("Yay server found!")
+        _moveOldFiles()
+        if ( not _checkForOverlap() ):
+            _moveNewFiles(serverName)
+            if (not testing):
+                print("Starting Server...")
+                subprocess.run('LD_LIBRARY_PATH=.')
+                subprocess.run('./bedrock_server')
+            else:
+                print("Testing so not starting server")
+        else:
+            print("Existing 'server.properties' or 'permissions.json' Files!")
+    else:
+        print("Invalid server name")
+
+    # Move current server.properties and permissions.json to their world dir
+    # Move new world server.properties and permissions.json to the parent dir
+    # Start server
+
+def stopServer():
+    subprocess.run('stop')
+
+def main():
+    parser = ArgParser(VERSION).parser
+    args = parser.parse_args()
+    testing = args.testing
+    if ( args.action == "start" ):
+        startServer(args.server, testing)
+    elif ( args.action == "stop" ):
+        stopServer()
+        print("Can't stop won't stop")
+
+if ( __name__ == '__main__' ):
+    main()

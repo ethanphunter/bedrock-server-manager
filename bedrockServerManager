@@ -14,6 +14,18 @@ import subprocess
 
 VERSION = "0.0.1"
 
+def _getAndValidateServerProperties(filePath):
+    if ( os.path.isfile(filePath) ):
+        s = ServerProperties(filePath)
+        validationErrors = s.validate()
+        if ( len(validationErrors) == 0 ):
+            return s
+        else:
+            return validationErrors
+    else:
+        return filePath + " Filepath does not exist"
+
+
 def _moveOldFiles():
     s = ServerProperties("server.properties")
     if ( os.path.isfile("./server.properties") ):
@@ -40,6 +52,12 @@ def _moveNewFiles(serverName: str):
     else:
         print(validationErrors)
 
+def _checkForProperties():
+    return os.path.isfile("./server.properties")
+
+def _checkForPermissions():
+    return os.path.isfile("./permissions.json")
+
 def _checkForOverlap():
     existingFiles = False
     if ( os.path.isfile("./server.properties") ):
@@ -48,26 +66,37 @@ def _checkForOverlap():
         existingFiles = True
     return existingFiles
 
+def _runServer(testing):
+    if ( not testing ):
+        print("Starting Server...")
+        subprocess.run('LD_LIBRARY_PATH=.')
+        subprocess.run('./bedrock_server')
+    else:
+        print("Testing so not starting server")
+
 def startServer(serverName: str, testing: bool):
-    if ( os.path.isdir("./worlds/" + serverName) ):
-        print("Yay server found!")
-        _moveOldFiles()
-        if ( not _checkForOverlap() ):
-            _moveNewFiles(serverName)
-            if (not testing):
-                print("Starting Server...")
-                subprocess.run('LD_LIBRARY_PATH=.')
-                subprocess.run('./bedrock_server')
+    newServerPath = "./worlds/" + serverName
+    if ( os.path.isdir(newServerPath) ):
+        if ( _checkForProperties() ):
+            serverProperties = _getAndValidateServerProperties("./server.properties")
+            if ( isinstance(serverProperties, ServerProperties) ):
+                if ( serverProperties.serverName == serverName ):
+                    _runServer(testing)
+                else:
+                    _moveOldFiles()
+                    if ( not _checkForOverlap() ):
+                        _moveNewFiles(serverName)
+                        _runServer(testing)
+                    else:
+                        print("Old files didn't get moved!")
             else:
-                print("Testing so not starting server")
+                print("Error validating server.properties : " + serverProperties)
         else:
-            print("Existing 'server.properties' or 'permissions.json' Files!")
+            _moveNewFiles(serverName)
+            _runServer(testing)
+
     else:
         print("Invalid server name")
-
-    # Move current server.properties and permissions.json to their world dir
-    # Move new world server.properties and permissions.json to the parent dir
-    # Start server
 
 def stopServer():
     subprocess.run('stop')

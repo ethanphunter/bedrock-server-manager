@@ -80,7 +80,7 @@ def startServer(serverName: str, testing: bool):
         if ( _checkForProperties() ):
             serverProperties = _getAndValidateServerProperties("./server.properties")
             if ( isinstance(serverProperties, ServerProperties) ):
-                if ( serverProperties.serverName == serverName ):
+                if ( serverProperties.levelName == serverName ):
                     _runServer(testing)
                 else:
                     _moveOldFiles()
@@ -102,6 +102,7 @@ def stopServer():
     subprocess.run('stop')
 
 def main():
+    # world dirs are named after the level-name not the server-name
     parser = ArgParser(VERSION).parser
     args = parser.parse_args()
     testing = args.testing

@@ -5,8 +5,24 @@ class ServerProperties(object):
         super(ServerProperties, self).__init__()
         self.filename = filename
         self.serverName = ""
+        self.gamemode = ""
+        self.difficulty = ""
+        self.allowCheats = False
+        self.maxPlayers = 0
+        self.onlineMode = True
+        self.whiteList = False
+        self.serverPort = -1
+        self.serverPortv6 = -1
+        self.viewDistance = 0
+        self.tickDistance = 0
+        self.playerIdleTimeout = 0
+        self.maxThreads = 0
+        self.levelName = ""
+        self.levelSeed = ""
+        self.defaultPlayerPermissionLevel = ""
+        self.texturepackRequired = False
         self.gamemodeValues = ['survival', 'creative', 'adventure']
-        self.difficulty = ['peaceful', 'easy', 'normal', 'hard']
+        self.difficultyValues = ['peaceful', 'easy', 'normal', 'hard']
         self.serverPortValues = range(1, 65536)
         self.serverPortv6Values = range(1, 65536)
         self.defaultPlayerPermissionLevelValues = ['visitor', 'member', 'operator']
@@ -30,14 +46,18 @@ class ServerProperties(object):
                     elif ( name == 'gamemode' ):
                         if ( value not in self.gamemodeValues ):
                             errors.append('gamemode')
+                        else:
+                            self.gamemode = value
 
                     elif ( name == 'difficulty' ):
-                        if ( value not in self.difficulty):
+                        if ( value not in self.difficultyValues):
                             errors.append('difficulty')
+                        else:
+                            self.difficulty = value
 
                     elif ( name == 'allow-cheats' ):
                         try:
-                            b = bool(value)
+                            self.allowCheats = bool(value)
                         except:
                             errors.append('allow-cheats')
 
@@ -46,18 +66,20 @@ class ServerProperties(object):
                             i = int(value)
                             if ( i <= 0 ):
                                 errors.append('max-players')
+                            else:
+                                self.maxPlayers = i
                         except:
                             errors.append('max-players')
 
                     elif ( name == 'online-mode' ):
                         try:
-                            b = bool(value)
+                            self.onlineMode = bool(value)
                         except:
                             errors.append('online-mode')
 
                     elif ( name == 'white-list' ):
                         try:
-                            b = bool(value)
+                            self.whiteList = bool(value)
                         except:
                             errors.append('white-list')
 
@@ -66,6 +88,8 @@ class ServerProperties(object):
                             i = int(value)
                             if ( i not in self.serverPortValues):
                                 errors.append('server-port')
+                            else:
+                                self.serverPort = i
                         except:
                             errors.append('server-port')
 
@@ -74,6 +98,8 @@ class ServerProperties(object):
                             i = int(value)
                             if ( i not in self.serverPortv6Values):
                                 errors.append('server-portv6')
+                            else:
+                                self.serverPortv6 = i
                         except:
                             errors.append('server-portv6')
 
@@ -82,6 +108,8 @@ class ServerProperties(object):
                             i = int(value)
                             if ( i <= 0 ):
                                 errors.append('view-distance')
+                            else:
+                                self.viewDistance = i
                         except:
                             errors.append('view-distance')
 
@@ -90,6 +118,8 @@ class ServerProperties(object):
                             i = int(value)
                             if ( i not in self.tickDistanceValues ):
                                 errors.append('tick-distance')
+                            else:
+                                self.tickDistance = i
                         except:
                             errors.append('tick-distance')
 
@@ -98,6 +128,8 @@ class ServerProperties(object):
                             i = int(value)
                             if ( i < 0 ):
                                 errors.append('player-idle-timeout')
+                            else:
+                                self.playerIdleTimeout = i
                         except:
                             errors.append('player-idle-timeout')
 
@@ -106,24 +138,33 @@ class ServerProperties(object):
                             i = int(value)
                             if ( i < 0 ):
                                 errors.append('max-threads')
+                            else:
+                                self.maxThreads = i
                         except:
                             errors.append('max-threads')
 
                     elif ( name == 'level-name' ):
                         if ( len(value) == 0 ):
                             errors.append('level-name')
+                        else:
+                            self.levelName = value
 
                     elif ( name == 'level-seed' ):
                         if ( 1 == 0 ):
                             errors.append('level-seed')
+                        else:
+                            self.levelSeed = value
 
                     elif ( name == 'default-player-permission-level' ):
                         if ( value not in self.defaultPlayerPermissionLevelValues ):
                             errors.append('default-players-permission-level')
+                        else:
+                            self.defaultPlayerPermissionLevel = value
 
                     elif ( name == 'texturepack-required' ):
                         try:
                             b = bool(value)
+                            self.texturepackRequired = b
                         except:
                             errors.append('texturepack-required')
 

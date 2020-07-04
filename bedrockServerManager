@@ -69,7 +69,7 @@ def _checkForOverlap():
 def _runServer(testing):
     if ( not testing ):
         print("Starting Server...")
-        subprocess.run('LD_LIBRARY_PATH=.')
+        # subprocess.run('LD_LIBRARY_PATH=.') # TODO: Figure out what this does and if it is needed in the long term
         subprocess.run('./bedrock_server')
     else:
         print("Testing so not starting server")

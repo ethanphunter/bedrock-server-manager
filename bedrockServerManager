@@ -12,7 +12,7 @@ import os
 from shutil import move
 import subprocess
 
-VERSION = "0.0.1"
+VERSION = "0.1.0"
 
 def _getAndValidateServerProperties(filePath):
     if ( os.path.isfile(filePath) ):
@@ -102,7 +102,6 @@ def stopServer():
     subprocess.run('stop')
 
 def main():
-    # world dirs are named after the level-name not the server-name
     parser = ArgParser(VERSION).parser
     args = parser.parse_args()
     testing = args.testing

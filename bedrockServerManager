@@ -90,7 +90,7 @@ def startServer(serverName: str, testing: bool):
                     else:
                         print("Old files didn't get moved!")
             else:
-                print("Error validating server.properties : " + serverProperties)
+                print("Error validating server.properties : " + str(serverProperties))
         else:
             _moveNewFiles(serverName)
             _runServer(testing)
